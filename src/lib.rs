@@ -49,7 +49,7 @@ impl<'a> Error for ParseError<'a> {
     }
 }
 
-pub fn validate_license_expr(license_expr: &str) -> Result<&str, ParseError> {
+pub fn validate_license_expr(license_expr: &str) -> Result<(), ParseError> {
     license_expr.split_whitespace().map(|word| match word {
         "AND"  => Ok(And),
         "OR"   => Ok(Or),
@@ -69,7 +69,7 @@ pub fn validate_license_expr(license_expr: &str) -> Result<&str, ParseError> {
             | (Ok(With), Ok(Exception(_)))
             => word,
         _ => Err(ParseError::InvalidStructure(word.unwrap()))
-    }).map(|_| license_expr)
+    }).and(Ok(()))
 }
 
 #[cfg(test)]
