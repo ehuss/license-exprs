@@ -1,6 +1,5 @@
 use std::error::Error;
 use std::fmt;
-
 mod spdx;
 
 use self::LicenseExpr::*;
@@ -54,8 +53,8 @@ pub fn validate_license_expr(license_expr: &str) -> Result<(), ParseError> {
         "AND"  => Ok(And),
         "OR"   => Ok(Or),
         "WITH" => Ok(With),
-        _ if spdx::LICENSES.contains(&word)   => Ok(License(word)),
-        _ if spdx::EXCEPTIONS.contains(&word) => Ok(Exception(word)),
+        _ if spdx::LICENSES.binary_search(&word).is_ok()   => Ok(License(word)),
+        _ if spdx::EXCEPTIONS.binary_search(&word).is_ok() => Ok(Exception(word)),
         _ => Err(ParseError::UnknownLicenseId(word))
     }).fold(Ok(Or), |prev, word| match (prev, word) {
         (err @ Err(_), _) | (_, err @ Err(_)) => err,
