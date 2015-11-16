@@ -76,29 +76,27 @@ mod tests {
 
     #[test]
     fn single_license() {
-        super::validate_license_expr("MIT").unwrap();
+        assert!(super::validate_license_expr("MIT").is_ok());
     }
 
     #[test]
     fn compound_license() {
-        super::validate_license_expr("GPL-3.0+ WITH Classpath-exception-2.0 OR MIT AND AAL")
-            .unwrap();
+        assert!(super::validate_license_expr("GPL-3.0+ WITH Classpath-exception-2.0 OR MIT AND AAL")
+                .is_ok());
     }
 
     #[test]
-    #[should_panic]
     fn fails_invalid_license() {
-        super::validate_license_expr("asdfghjkl").unwrap();
-        super::validate_license_expr("MIT AND qwerty").unwrap();
+        assert!(super::validate_license_expr("asdfghjkl").is_err());
+        assert!(super::validate_license_expr("MIT AND qwerty").is_err())
     }
 
     #[test]
-    #[should_panic]
     fn fails_incorrect_structure() {
-        super::validate_license_expr("WITH").unwrap();
-        super::validate_license_expr("MIT OR WITH").unwrap();
-        super::validate_license_expr("MIT AND Classpath-exception-2.0").unwrap();
-        super::validate_license_expr("Classpath-exception-2.0").unwrap();
+        assert!(super::validate_license_expr("WITH").is_err());
+        assert!(super::validate_license_expr("MIT OR WITH").is_err());
+        assert!(super::validate_license_expr("MIT AND Classpath-exception-2.0").is_err());
+        assert!(super::validate_license_expr("Classpath-exception-2.0").is_err());
     }
 
 }
