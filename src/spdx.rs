@@ -12,6 +12,7 @@ pub const LICENSES: &'static [&'static str] = &[
     "AFL-3.0",
     "AGPL-1.0",
     "AGPL-3.0",
+    "AGPL-3.0+",
     "AMDPLPA",
     "AML",
     "AMPAS",
