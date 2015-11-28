@@ -50,12 +50,14 @@ impl<'a> Error for ParseError<'a> {
 
 pub fn validate_license_expr(license_expr: &str) -> Result<(), ParseError> {
     license_expr.split_whitespace().map(|word| match word {
-        "AND"  => Ok(And),
-        "OR"   => Ok(Or),
-        "WITH" => Ok(With),
-        _ if spdx::LICENSES.binary_search(&word).is_ok()   => Ok(License(word)),
-        _ if spdx::EXCEPTIONS.binary_search(&word).is_ok() => Ok(Exception(word)),
-        _ => Err(ParseError::UnknownLicenseId(word))
+        "AND"   => Ok(And),
+        "OR"    => Ok(Or),
+        "WITH"  => Ok(With),
+        _ if spdx::LICENSES.binary_search(&word.trim_right_matches('+')).is_ok()
+                => Ok(License(word)),
+        _ if spdx::EXCEPTIONS.binary_search(&word).is_ok()
+                => Ok(Exception(word)),
+        _       => Err(ParseError::UnknownLicenseId(word))
     }).fold(Ok(Or), |prev, word| match (prev, word) {
         (err @ Err(_), _) | (_, err @ Err(_)) => err,
         (Ok(License(_)), Ok(With))
