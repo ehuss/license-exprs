@@ -88,6 +88,7 @@ pub const LICENSES: &'static [&'static str] = &[
     "CECILL-1.0",
     "CECILL-1.1",
     "CECILL-2.0",
+    "CECILL-2.1",
     "CECILL-B",
     "CECILL-C",
     "CNRI-Python",
