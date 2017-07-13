@@ -1,1 +1,1 @@
-This crate validates license strings as [SPDX 2.0 license expressions](https://spdx.org/SPDX-specifications/spdx-version-2.0).
+This crate validates license strings as [SPDX 2.1 license expressions](https://spdx.org/spdx-specification-21-web-version#h.jxpfx0ykyb60).
