@@ -287,6 +287,7 @@ pub const LICENSES: &'static [&'static str] = &[
     "TMate",
     "TORQUE-1.1",
     "TOSL",
+    "UPL-1.0",
     "Unicode-TOU",
     "Unlicense",
     "VOSTROM",
