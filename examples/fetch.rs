@@ -3,22 +3,13 @@
 
 #[macro_use]
 extern crate error_chain;
-extern crate futures;
-extern crate hyper;
-extern crate hyper_tls;
-extern crate native_tls;
 extern crate serde_json;
-extern crate tokio_core;
+extern crate reqwest;
 
 use std::io::{self, Write};
 use std::{env, process};
 
-use futures::{future, Future, Stream};
-use hyper::Client;
-use hyper_tls::HttpsConnector;
-use serde_json::Value;
-use serde_json::map::Map;
-use tokio_core::reactor::Core;
+use serde_json::{Value, map};
 
 // We'll put our errors in a `errors` module
 mod errors {
@@ -29,37 +20,35 @@ mod errors {
         // error types not defined by the `error_chain!`.
         foreign_links {
             IO(::std::io::Error);
-            TLS(::native_tls::Error);
-            URI(::hyper::error::UriError);
-            Hyper(::hyper::error::Error);
-            JSON(::serde_json::Error);
+            Reqwest(::reqwest::Error);
         }
     }
 }
 
-fn download<F>(core: &mut Core, uri: &str, mut action: F, debug: bool) -> errors::Result<()>
-    where F: FnMut(Map<String, Value>) -> errors::Result<()> {
-    let handle = core.handle();
-    let c = Client::configure().connector(HttpsConnector::new(4, &handle)?).build(&handle);
-    let future = c.get(uri.parse()?).and_then(|res| {
-        future::result(if debug {
-            writeln!(io::stderr(), "Response: {}", res.status())
-        } else { Ok(()) }.map_err(|e| e.into())).and_then(|_| {
-            res.body().concat2()})});
-    let res = core.run(future)?;
+type Map = map::Map<String, Value>;
 
-    let json: Value = serde_json::from_slice(&res)?;
+fn download<F>(uri: &str, mut action: F, debug: bool) -> errors::Result<()>
+    where F: FnMut(Map) -> errors::Result<()> {
+    let json: Value = reqwest::get(uri)?.json()?;
     let json = if let Value::Object(m) = json {
         m
     } else {
-        return Err(io::Error::new(io::ErrorKind::Other, format!("Malformed JSON: {:?}", json)).into())
+        bail!("Malformed JSON: {:?}", json)
     };
 
     if debug {
         writeln!(io::stderr(), "#json == {}", json.len())?;
-        writeln!(io::stderr(), "License list version {}", json["licenseListVersion"])?;
+        writeln!(io::stderr(), "License list version {}", get(&json, "licenseListVersion")?)?;
     }
     action(json)
+}
+
+fn get<'a>(m: &'a Map, k: &str) -> errors::Result<&'a Value> {
+    if let Some(v) = m.get(k) {
+        Ok(v)
+    } else {
+        bail!("Malformed JSON: {:?} lacks {}", m, k)
+    }
 }
 
 fn main1(args: &[String]) -> errors::Result<()> {
@@ -100,16 +89,15 @@ fn main1(args: &[String]) -> errors::Result<()> {
  */
 ")?;
 
-    let mut core = Core::new()?;
-
     let licenses_json_uri =
         format!("https://raw.githubusercontent.com/spdx/license-list-data/{}/json/licenses.json",
                 upstream_tag);
-    download(&mut core, &licenses_json_uri, |json| {
-        let licenses = if let Value::Array(ref v) = json["licenses"] {
+    download(&licenses_json_uri, |json| {
+        let licenses = get(&json, "licenses")?;
+        let licenses = if let &Value::Array(ref v) = licenses {
             v
         } else {
-            bail!("Malformed JSON: {:?}", json["licenses"])
+            bail!("Malformed JSON: {:?}", licenses)
         };
         writeln!(stderr, "#licenses == {}", licenses.len())?;
 
@@ -121,23 +109,24 @@ fn main1(args: &[String]) -> errors::Result<()> {
                 bail!("Malformed JSON: {:?}", lic)
             };
             if debug {
-                writeln!(stderr, "{},{}",
-                    lic.get("licenseId").unwrap_or(&Value::String("missing licenseId".into())),
-                    lic.get("name").unwrap_or(&Value::String("missing name".into())))?;
+                writeln!(stderr, "{:?},{:?}", get(&lic, "licenseId"), get(&lic, "name"))?;
             }
 
-            if let Some(id) = lic.get("licenseId") {
-                if let Value::String(ref s) = *id {
-                    v.push(s);
-                } else {
-                    bail!("Malformed JSON: {:?}", id);
-                }
+            let lic_id = get(&lic, "licenseId")?;
+            if let &Value::String(ref s) = lic_id {
+                v.push(s);
+            } else {
+                bail!("Malformed JSON: {:?}", lic_id);
             }
         }
         v.sort();
 
-        writeln!(stdout, "pub const VERSION: &'static str = {};",
-            json.get("licenseListVersion").ok_or("missing licenseListVersion")?)?;
+        let lic_list_ver = get(&json, "licenseListVersion")?;
+        if let &Value::String(ref s) = lic_list_ver {
+            writeln!(stdout, "pub const VERSION: &'static str = {:?};", s)?;
+        } else {
+            bail!("Malformed JSON: {:?}", lic_list_ver)
+        }
         writeln!(stdout)?;
         writeln!(stdout, "pub const LICENSES: &'static [&'static str] = &[")?;
         for lic in v.iter() {
@@ -153,11 +142,12 @@ fn main1(args: &[String]) -> errors::Result<()> {
     let exceptions_json_uri =
         format!("https://raw.githubusercontent.com/spdx/license-list-data/{}/json/exceptions.json",
                 upstream_tag);
-    download(&mut core, &exceptions_json_uri, |json| {
-        let exceptions = if let Value::Array(ref v) = json["exceptions"] {
+    download(&exceptions_json_uri, |json| {
+        let exceptions = get(&json, "exceptions")?;
+        let exceptions = if let &Value::Array(ref v) = exceptions {
             v
         } else {
-            bail!("Malformed JSON: {:?}", json["exceptions"])
+            bail!("Malformed JSON: {:?}", exceptions)
         };
         writeln!(stderr, "#exceptions == {}", exceptions.len())?;
 
@@ -169,13 +159,14 @@ fn main1(args: &[String]) -> errors::Result<()> {
                 bail!("Malformed JSON: {:?}", exc)
             };
             if debug {
-                writeln!(io::stderr(), "{},{}", exc["licenseExceptionId"], exc["name"])?;
+                writeln!(stderr, "{:?},{:?}", get(&exc, "licenseExceptionId"), get(&exc, "name"))?;
             }
 
-            if let Value::String(ref s) = exc["licenseExceptionId"] {
+            let lic_exc_id = get(&exc, "licenseExceptionId")?;
+            if let &Value::String(ref s) = lic_exc_id {
                 v.push(s);
             } else {
-                bail!("Malformed JSON: {:?}", exc["licenseExceptionId"])
+                bail!("Malformed JSON: {:?}", lic_exc_id)
             };
         }
 
