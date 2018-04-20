@@ -73,6 +73,10 @@ pub fn validate_license_expr(license_expr: &str) -> Result<(), ParseError> {
     }).and(Ok(()))
 }
 
+pub fn license_version() -> &'static str {
+    spdx::VERSION
+}
+
 #[cfg(test)]
 mod tests {
 
