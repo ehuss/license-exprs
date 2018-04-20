@@ -7,7 +7,7 @@
  * cargo run --example fetch-license-list-from-spdx v3.0 > spdx.rs
  */
 
-pub const VERSION: &'static str = "3.0";
+pub const VERSION: &'static str = "3.1";
 
 pub const LICENSES: &'static [&'static str] = &[
     "0BSD",
@@ -19,6 +19,8 @@ pub const LICENSES: &'static [&'static str] = &[
     "AFL-2.1",
     "AFL-3.0",
     "AGPL-1.0",
+    "AGPL-1.0-only",
+    "AGPL-1.0-or-later",
     "AGPL-3.0",
     "AGPL-3.0-only",
     "AGPL-3.0-or-later",
@@ -222,7 +224,9 @@ pub const LICENSES: &'static [&'static str] = &[
     "LiLiQ-R-1.1",
     "LiLiQ-Rplus-1.1",
     "Libpng",
+    "Linux-OpenIB",
     "MIT",
+    "MIT-0",
     "MIT-CMU",
     "MIT-advertising",
     "MIT-enna",
@@ -395,11 +399,13 @@ pub const EXCEPTIONS: &'static [&'static str] = &[
     "Font-exception-2.0",
     "GCC-exception-2.0",
     "GCC-exception-3.1",
+    "LLVM-exception",
     "LZMA-exception",
     "Libtool-exception",
     "Linux-syscall-note",
     "Nokia-Qt-exception-1.1",
     "OCCT-exception-1.0",
+    "OpenJDK-assembly-exception-1.0",
     "Qwt-exception-1.0",
     "WxWindows-exception-3.1",
     "eCos-exception-2.0",
