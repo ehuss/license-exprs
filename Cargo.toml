@@ -6,11 +6,5 @@ license = "Apache-2.0 OR MIT"
 description = "Validate SPDX 2.1 license expressions using SPDX License List 3.0 identifiers."
 repository = "https://github.com/withoutboats/license-exprs"
 
-[[example]]
-name = "fetch-license-list-from-spdx"
-path = "examples/fetch.rs"
-
-[dev-dependencies]
-reqwest = "0.8"
-serde_json = "1"
-error-chain = "0.11"
+[workspace]
+members = [".", "fetch-license-list-from-spdx"]
