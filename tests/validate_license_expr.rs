@@ -22,7 +22,7 @@ fn single_license() {
         " MIT",
         " MIT ",
         "    MIT    ",
-        "MIT+",
+        "AGPL-1.0+",
     }
 }
 
@@ -67,6 +67,6 @@ fn fails_incorrect_structure() {
         "MIT AND Classpath-exception-2.0",
         "Classpath-exception-2.0 WITH MIT",
         "Classpath-exception-2.0",
-        "MIT +",
+        "AGPL-1.0 +",
     }
 }
