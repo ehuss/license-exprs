@@ -53,7 +53,7 @@ pub fn validate_license_expr(license_expr: &str) -> Result<(), ParseError> {
         "AND"   => Ok(And),
         "OR"    => Ok(Or),
         "WITH"  => Ok(With),
-        _ if spdx::LICENSES.binary_search(&word.trim_right_matches('+')).is_ok()
+        _ if spdx::LICENSES.binary_search(&word.trim_end_matches('+')).is_ok()
                 => Ok(License(word)),
         _ if spdx::EXCEPTIONS.binary_search(&word).is_ok()
                 => Ok(Exception(word)),

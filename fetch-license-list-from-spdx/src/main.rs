@@ -14,7 +14,7 @@ use serde_json::{Value, map};
 // We'll put our errors in a `errors` module
 mod errors {
     // Create the Error, ErrorKind, ResultExt, and Result types
-    #[allow(unused_doc_comment)]
+    #[allow(unused_doc_comments)]
     error_chain!{
         // Automatic conversions between this error chain and other
         // error types not defined by the `error_chain!`.
