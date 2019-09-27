@@ -1,6 +1,6 @@
 # license-exprs
 
-This crate validates [SPDX 2.1 license expressions][SPDX-license-expressions] using short identifiers from the [SPDX 3.1 License List][SPDX-license-list].
+This crate validates [SPDX 2.1 license expressions][SPDX-license-expressions] using short identifiers from the [SPDX 3.6 License List][SPDX-license-list].
 
 ## Limitations
 
@@ -14,4 +14,4 @@ Licensed under the [Apache License, Version 2.0][Apache-2.0] ([`LICENSE-APACHE`]
 [MIT]: https://opensource.org/licenses/MIT
 [parens]: https://github.com/rust-lang-nursery/license-exprs/issues/3
 [SPDX-license-expressions]: https://spdx.org/spdx-specification-21-web-version#h.jxpfx0ykyb60
-[SPDX-license-list]: https://github.com/spdx/license-list-data/tree/v3.1
+[SPDX-license-list]: https://github.com/spdx/license-list-data/tree/v3.6

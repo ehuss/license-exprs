@@ -23,6 +23,8 @@ fn single_license() {
         " MIT ",
         "    MIT    ",
         "AGPL-1.0+",
+        "BlueOak-1.0.0",
+        "Parity-6.0.0",
     }
 }
 
