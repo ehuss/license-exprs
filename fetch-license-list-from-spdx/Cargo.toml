@@ -5,6 +5,6 @@ authors = []
 publish = false
 
 [dependencies]
-reqwest = "0.9"
+reqwest = { version = "0.10", features = ["blocking", "json"] }
 serde_json = "1"
 error-chain = "0.12"
