@@ -1,6 +1,6 @@
 [package]
 name = "license-exprs"
-version = "1.4.0"
+version = "1.6.0"
 authors = ["Without Boats <woboats@gmail.com>"]
 license = "Apache-2.0 OR MIT"
 description = "Validate SPDX 2.1 license expressions using SPDX License List 3.11 identifiers."
