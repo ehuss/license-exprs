@@ -31,7 +31,7 @@ fn download<F>(uri: &str, mut action: F, debug: bool) -> errors::Result<()>
 where
     F: FnMut(Map) -> errors::Result<()>,
 {
-    let json: Value = reqwest::get(uri)?.json()?;
+    let json: Value = reqwest::blocking::get(uri)?.json()?;
     let json = if let Value::Object(m) = json {
         m
     } else {
